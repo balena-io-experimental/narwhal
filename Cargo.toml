@@ -4,3 +4,7 @@ version = "0.1.0"
 authors = ["Cameron Diver <cameron@resin.io>"]
 
 [dependencies]
+serde = "1.0.13"
+serde_json = "1.0.13"
+serde_derive = "1.0"
+error-chain = "0.11.0"
