@@ -1,0 +1,6 @@
+[package]
+name = "narwhal"
+version = "0.1.0"
+authors = ["Cameron Diver <cameron@resin.io>"]
+
+[dependencies]
