@@ -17,3 +17,16 @@ pub fn version(client: Client) -> Result<EngineVersion> {
     Ok(version)
 }
 
+pub fn ping(client: Client) -> Result<()> {
+    let response = simple_get(client, "/_ping").chain_err(|| "Failed to ping engine")?;
+
+    if response.status_code != 200 {
+        bail!("non-200 response from engine");
+    }
+
+    if response.body != "OK" {
+        bail!("Malformed response from engine");
+    }
+
+    Ok(())
+}

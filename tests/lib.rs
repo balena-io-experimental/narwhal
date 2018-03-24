@@ -49,5 +49,19 @@ mod tests {
                 assert!(false, "Could not get engine version");
             }
         }
+
+        #[test]
+        pub fn ping_engine() {
+            let c = ::narwhal::types::Client {
+                socket_path: String::from("/var/run/docker.sock"),
+            };
+            let ping = ::narwhal::engine::ping(c);
+            if let Err(ref e) = ping {
+                use error_chain::ChainedError;
+                print!("{}", e.display_chain());
+                assert!(false, "Could not ping engine");
+            }
+
+        }
     }
 }
