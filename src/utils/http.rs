@@ -58,7 +58,7 @@ pub fn parse_response(response: &str) -> Result<Response> {
         .chain_err(|| "Could not parse status code of HTTP response as int")?;
 
     let mut res = Response {
-        status_code: status_code,
+        status_code,
         headers: HashMap::new(),
         body: String::new(),
     };

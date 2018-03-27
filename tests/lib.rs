@@ -1,6 +1,5 @@
 extern crate narwhal;
 
-#[macro_use]
 extern crate error_chain;
 
 #[cfg(test)]
@@ -77,8 +76,8 @@ mod tests {
                 assert!(r.headers.contains_key("header"), "HTTP headers not correctly parsed");
                 assert!(r.headers.contains_key("header2"), "HTTP headers not correctly parsed");
 
-                assert_eq!(r.headers.get("header").unwrap(), "value");
-                assert_eq!(r.headers.get("header2").unwrap(), "value2");
+                assert_eq!(&r.headers["header"], "value");
+                assert_eq!(&r.headers["header2"], "value2");
 
                 assert_eq!(r.body, "body\r\nbody2");
             }
