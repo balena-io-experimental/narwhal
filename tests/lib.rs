@@ -7,10 +7,6 @@ extern crate error_chain;
 mod tests {
 
     mod network {
-        #[test]
-        pub fn path_format() {
-            assert_eq!(::narwhal::network::format_path("/info", "GET"), "GET /info HTTP/1.1\r\nHost: /docker\r\n\r\n");
-        }
 
         #[test]
         pub fn get_request() {
@@ -62,6 +58,43 @@ mod tests {
                 assert!(false, "Could not ping engine");
             }
 
+        }
+    }
+
+    mod utils {
+        #[test]
+        pub fn http_response_parsing() {
+            let response = "HTTP/1.1 304 test\r\nheader: value\r\nheader2: value2\r\n\r\nbody\r\nbody2";
+            let parsed = ::narwhal::utils::http::parse_response(response);
+            if let Err(ref e) = parsed {
+                use error_chain::ChainedError;
+                print!("{}", e.display_chain());
+                assert!(false, "Could not parse HTTP response");
+            } else {
+                let r = parsed.unwrap();
+                assert_eq!(r.status_code, 304);
+
+                assert!(r.headers.contains_key("header"), "HTTP headers not correctly parsed");
+                assert!(r.headers.contains_key("header2"), "HTTP headers not correctly parsed");
+
+                assert_eq!(r.headers.get("header").unwrap(), "value");
+                assert_eq!(r.headers.get("header2").unwrap(), "value2");
+
+                assert_eq!(r.body, "body\r\nbody2");
+            }
+        }
+
+        #[test]
+        pub fn http_request_generating() {
+
+            let mut request = ::narwhal::utils::http::Request {
+                method: String::from("GET"),
+                path: String::from("/test"),
+                headers: ::std::collections::HashMap::new(),
+            };
+            request.headers.insert(String::from("header"), String::from("value"));
+            let request_str = ::narwhal::utils::http::gen_request_string(request);
+            assert_eq!(request_str, "GET /test HTTP/1.1\r\nheader: value\r\n\r\n");
         }
     }
 }
