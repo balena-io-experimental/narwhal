@@ -5,38 +5,44 @@ extern crate error_chain;
 #[cfg(test)]
 mod tests {
 
-    mod network {
+    use std::env;
+    use std::path::Path;
+    use ::narwhal::types::{ Client, TcpClient, TlsFiles };
 
-        #[test]
-        pub fn get_request() {
-            let c = ::narwhal::types::Client {
-                socket_path: String::from("/var/run/docker.sock"),
-            };
-            let response = ::narwhal::network::simple_get(c, "/_ping").unwrap();
-            assert_eq!(response.body, "OK");
-            assert_eq!(response.status_code, 200);
-        }
-
-        #[test]
-        pub fn cant_access_socket() {
-            let c = ::narwhal::types::Client {
-                socket_path: String::from("/should/not/exist"),
-            };
-            let response = ::narwhal::network::simple_get(c, "/_ping");
-            match response {
-                Ok(_) => assert!(false, "Should fail to connect to the docker socket"),
-                Err(e) => assert_eq!(e.description(), "Could not connect to unix socket"),
+    fn get_client() -> Client {
+        return match env::var("CIRCLECI") {
+            Ok(_) => {
+                // Return a TLS client
+                let cert_path_str = env::var("DOCKER_CERT_PATH").unwrap();
+                let cert_path = Path::new(&cert_path_str);
+                let url = env::var("DOCKER_HOST").unwrap();
+                let mut parts = url.split(':');
+                let host = parts.next().unwrap();
+                let port = parts.next().unwrap();
+                Client::new_tls( TcpClient {
+                    host: String::from(host),
+                    port: port.parse().unwrap(),
+                }, TlsFiles {
+                    ca: String::from(cert_path.join("ca.pem").to_string_lossy()),
+                    cert: String::from(cert_path.join("cert.pem").to_string_lossy()),
+                    key: String::from(cert_path.join("key.pem").to_string_lossy()),
+                })
+            },
+            Err(_) => {
+                Client::new_unix(String::from("/var/run/docker.sock"))
             }
         }
     }
 
     mod engine {
+
+        use ::narwhal::engine;
+        use super::get_client;
+
         #[test]
         pub fn get_version() {
-            let c = ::narwhal::types::Client {
-                socket_path: String::from("/var/run/docker.sock"),
-            };
-            let version = ::narwhal::engine::version(c);
+            let c = get_client();
+            let version = engine::version(c);
 
             if let Err(ref e) = version {
                 use error_chain::ChainedError;
@@ -47,10 +53,8 @@ mod tests {
 
         #[test]
         pub fn ping_engine() {
-            let c = ::narwhal::types::Client {
-                socket_path: String::from("/var/run/docker.sock"),
-            };
-            let ping = ::narwhal::engine::ping(c);
+            let c = get_client();
+            let ping = engine::ping(c);
             if let Err(ref e) = ping {
                 use error_chain::ChainedError;
                 print!("{}", e.display_chain());
@@ -61,10 +65,12 @@ mod tests {
     }
 
     mod utils {
+        use ::narwhal::utils::http;
+
         #[test]
         pub fn http_response_parsing() {
             let response = "HTTP/1.1 304 test\r\nheader: value\r\nheader2: value2\r\n\r\nbody\r\nbody2";
-            let parsed = ::narwhal::utils::http::parse_response(response);
+            let parsed = http::parse_response(response);
             if let Err(ref e) = parsed {
                 use error_chain::ChainedError;
                 print!("{}", e.display_chain());
@@ -86,7 +92,7 @@ mod tests {
         #[test]
         pub fn http_request_generating() {
 
-            let mut request = ::narwhal::utils::http::Request {
+            let mut request = http::Request {
                 method: String::from("GET"),
                 path: String::from("/test"),
                 headers: ::std::collections::HashMap::new(),

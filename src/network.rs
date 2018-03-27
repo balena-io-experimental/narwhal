@@ -1,28 +1,50 @@
-use std::os::unix::net::UnixStream;
-use std::io::prelude::*;
-
 use errors::*;
+use types;
 use types::Client;
+
+use httpstream::HttpStream;
+use tcp::TcpStream;
+use unix::UnixStream;
+use tls::TlsStream;
 
 use utils::http;
 
-pub fn simple_get(client: Client, path: &str) -> Result<http::Response> {
-    let mut stream = UnixStream::connect(client.socket_path).chain_err(|| "Could not connect to unix socket")?;
-    let mut req = http::Request {
-        method: String::from("GET"),
-        path: String::from(path),
-        headers: ::std::collections::HashMap::new()
-    };
-    req.headers.insert(String::from("Host"), String::from("/narwhal"));
+pub fn get(client: Client, path: &str) -> Result<http::Response> {
+    let req = gen_request("GET", path);
 
-    let req_str = http::gen_request_string(req);
+    match client.backend {
+        types::CommsBackend::Unix => {
+            let stream = UnixStream::connect(client)
+                .chain_err(|| "Could not connect to unix socket")?;
 
-    stream.write_all(req_str.as_bytes()).chain_err(|| "Could not write to unix socket")?;
+            perform_request(stream, req)
+        },
+        types::CommsBackend::TCP => {
+            let stream = TcpStream::connect(client)
+                .chain_err(|| "Could not connect to tcp address")?;
 
-    let mut response_str = String::new();
-    stream.read_to_string(&mut response_str).chain_err(|| "Could not read from unix socket")?;
+            perform_request(stream, req)
+        },
+        types::CommsBackend::TLS => {
+            let stream = TlsStream::connect(client)
+                .chain_err(|| "Could not connect to tls address")?;
 
-    let res = http::parse_response(&response_str).chain_err(|| "Could not parse response")?;
-    Ok(res)
+            perform_request(stream, req)
+        }
+    }
 }
 
+pub fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Result<http::Response> {
+    stream.request(req)
+        .chain_err(|| "Could not perform HTTP request")
+}
+
+pub fn gen_request(method: &str, path: &str) -> http::Request {
+    let mut req = http::Request {
+        method: String::from(method),
+        path: String::from(path),
+        headers: ::std::collections::HashMap::new(),
+    };
+    req.headers.insert(String::from("Host"), String::from("narwhal"));
+    req
+}

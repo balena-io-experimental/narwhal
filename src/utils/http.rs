@@ -10,7 +10,7 @@ pub struct Request {
 }
 
 pub struct Response {
-    pub status_code: u32,
+    pub status_code: u16,
     pub headers: HashMap<String, String>,
     pub body: String,
 }
@@ -54,7 +54,7 @@ pub fn parse_response(response: &str) -> Result<Response> {
     let status_code = captures.get(1)
         .chain_err(|| "Could not parse status code of HTTP response")?
         .as_str()
-        .parse::<u32>()
+        .parse::<u16>()
         .chain_err(|| "Could not parse status code of HTTP response as int")?;
 
     let mut res = Response {
