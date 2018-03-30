@@ -14,6 +14,7 @@ pub mod errors;
 pub mod types;
 pub mod network;
 pub mod engine;
+pub mod images;
 pub mod utils;
 pub mod httpstream;
 pub mod tcp;
