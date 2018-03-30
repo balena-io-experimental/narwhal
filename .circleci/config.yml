@@ -4,12 +4,51 @@ machine:
   services:
     - docker
 
+buildSteps: &buildSteps
+  - checkout
+  - setup-docker-engine
+  - run: cargo test -- --nocapture
+  - run: cargo clippy -- -D warnings
+  - persist_to_workspace:
+    root: ../
+    paths:
+      - ./nightly
+
 jobs:
-  build:
+  nightly:
     docker:
-      - image: circleci/rust:1
+      - image: 0xcd/rust-base-nightly
+    working_directory: ~/nightly
+    steps: *buildSteps
+  deploy:
+    docker:
+      - image: 0xcd/rust-base-nightly
     steps:
-      - setup-docker-engine
-      - checkout
-      - run: cargo test -- --nocapture
+      - attach_workspace:
+        at: $CIRCLE_WORKING_DIRECTORY
+      - run:
+        name: Login to crates.io
+        command: |
+          cargo login $CRATES_TOKEN
+      - deploy:
+        name: Deploy to crates.io
+        command: cargo publish
+        working_directory: $CIRCLE_WORKING_DIRECTORY/nightly
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - nightly:
+        filters:
+          tags:
+            only: /.*/
+      - deploy:
+        requires:
+          - nightly
+        filters:
+          tags:
+            only: /^v\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
 
