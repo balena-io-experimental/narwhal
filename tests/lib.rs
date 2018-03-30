@@ -220,15 +220,15 @@ mod tests {
         }
 
         #[test]
-        pub fn http_request_with_body() {
+        pub fn gen_http_request_with_body() {
             let request = http::Request {
-                method: String::from("GET"),
+                method: String::from("POST"),
                 path: String::from("/test"),
                 headers: ::std::collections::HashMap::new(),
                 body: Some(String::from("testbody")),
             };
             let request_str = http::gen_request_string(request);
-            assert_eq!(request_str, "GET /test HTTP/1.1\r\n\r\ntestbody");
+            assert_eq!(request_str, "POST /test HTTP/1.1\r\n\r\ntestbody");
         }
 
         #[test]
