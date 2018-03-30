@@ -10,7 +10,7 @@ use tls::TlsStream;
 use utils::http;
 
 pub fn get(client: Client, path: &str) -> Result<http::Response> {
-    let req = gen_request("GET", path);
+    let req = gen_request("GET", path, None);
 
     match client.backend {
         types::CommsBackend::Unix => {
@@ -43,11 +43,12 @@ pub fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Resu
     )
 }
 
-pub fn gen_request(method: &str, path: &str) -> http::Request {
+pub fn gen_request(method: &str, path: &str, body: Option<String>) -> http::Request {
     let mut req = http::Request {
         method: String::from(method),
         path: String::from(path),
         headers: ::std::collections::HashMap::new(),
+        body
     };
     req.headers.insert(
         String::from("Host"),
