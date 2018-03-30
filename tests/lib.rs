@@ -1,12 +1,14 @@
 extern crate narwhal;
 
 extern crate error_chain;
+extern crate url;
 
 #[cfg(test)]
 mod tests {
 
     use std::env;
     use std::path::Path;
+    use url::Url;
     use ::narwhal::types::{ Client, TcpClient, TlsFiles };
 
     fn get_client() -> Client {
@@ -15,13 +17,13 @@ mod tests {
                 // Return a TLS client
                 let cert_path_str = env::var("DOCKER_CERT_PATH").unwrap();
                 let cert_path = Path::new(&cert_path_str);
-                let url = env::var("DOCKER_HOST").unwrap();
-                let mut parts = url.split(':');
-                let host = parts.next().unwrap();
-                let port = parts.next().unwrap();
+                let url_str = env::var("DOCKER_HOST").unwrap();
+
+                let parsed = Url::parse(&url_str).unwrap();
+
                 Client::new_tls( TcpClient {
-                    host: String::from(host),
-                    port: port.parse().unwrap(),
+                    host: String::from(parsed.host_str().unwrap()),
+                    port: parsed.port().unwrap(),
                 }, TlsFiles {
                     ca: String::from(cert_path.join("ca.pem").to_string_lossy()),
                     cert: String::from(cert_path.join("cert.pem").to_string_lossy()),
