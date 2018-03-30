@@ -9,7 +9,7 @@ mod tests {
     use std::env;
     use std::path::Path;
     use url::Url;
-    use ::narwhal::types::{ Client, TcpClient, TlsFiles };
+    use narwhal::types::{Client, TcpClient, TlsFiles};
 
     fn get_client() -> Client {
         match env::var("CIRCLECI") {
@@ -21,24 +21,25 @@ mod tests {
 
                 let parsed = Url::parse(&url_str).unwrap();
 
-                Client::new_tls( TcpClient {
-                    host: String::from(parsed.host_str().unwrap()),
-                    port: parsed.port().unwrap(),
-                }, TlsFiles {
-                    ca: String::from(cert_path.join("ca.pem").to_string_lossy()),
-                    cert: String::from(cert_path.join("cert.pem").to_string_lossy()),
-                    key: String::from(cert_path.join("key.pem").to_string_lossy()),
-                })
-            },
-            Err(_) => {
-                Client::new_unix(String::from("/var/run/docker.sock"))
+                Client::new_tls(
+                    TcpClient {
+                        host: String::from(parsed.host_str().unwrap()),
+                        port: parsed.port().unwrap(),
+                    },
+                    TlsFiles {
+                        ca: String::from(cert_path.join("ca.pem").to_string_lossy()),
+                        cert: String::from(cert_path.join("cert.pem").to_string_lossy()),
+                        key: String::from(cert_path.join("key.pem").to_string_lossy()),
+                    },
+                )
             }
+            Err(_) => Client::new_unix(String::from("/var/run/docker.sock")),
         }
     }
 
     mod engine {
 
-        use ::narwhal::engine;
+        use narwhal::engine;
         use super::get_client;
 
         #[test]
@@ -67,11 +68,12 @@ mod tests {
     }
 
     mod utils {
-        use ::narwhal::utils::http;
+        use narwhal::utils::http;
 
         #[test]
         pub fn http_response_parsing() {
-            let response = "HTTP/1.1 304 test\r\nheader: value\r\nheader2: value2\r\n\r\nbody\r\nbody2";
+            let response = "HTTP/1.1 304 test\r\nheader: value\r\n\
+                header2: value2\r\n\r\nbody\r\nbody2";
             let parsed = http::parse_response(response);
             if let Err(ref e) = parsed {
                 use error_chain::ChainedError;
@@ -81,8 +83,14 @@ mod tests {
                 let r = parsed.unwrap();
                 assert_eq!(r.status_code, 304);
 
-                assert!(r.headers.contains_key("header"), "HTTP headers not correctly parsed");
-                assert!(r.headers.contains_key("header2"), "HTTP headers not correctly parsed");
+                assert!(
+                    r.headers.contains_key("header"),
+                    "HTTP headers not correctly parsed"
+                );
+                assert!(
+                    r.headers.contains_key("header2"),
+                    "HTTP headers not correctly parsed"
+                );
 
                 assert_eq!(&r.headers["header"], "value");
                 assert_eq!(&r.headers["header2"], "value2");
@@ -99,7 +107,10 @@ mod tests {
                 path: String::from("/test"),
                 headers: ::std::collections::HashMap::new(),
             };
-            request.headers.insert(String::from("header"), String::from("value"));
+            request.headers.insert(
+                String::from("header"),
+                String::from("value"),
+            );
             let request_str = ::narwhal::utils::http::gen_request_string(request);
             assert_eq!(request_str, "GET /test HTTP/1.1\r\nheader: value\r\n\r\n");
         }

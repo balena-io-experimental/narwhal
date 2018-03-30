@@ -3,7 +3,7 @@ use std::io::Read;
 use types::Client;
 
 use errors::*;
-use utils::http::{ Request, Response };
+use utils::http::{Request, Response};
 
 pub trait HttpStream: Sized {
     fn connect(client: Client) -> Result<Self>;
@@ -16,8 +16,9 @@ pub fn read_from_stream<T: Read>(stream: &mut T) -> Result<String> {
     let mut raw: Vec<u8> = Vec::new();
 
     loop {
-        let len = stream.read(&mut buffer)
-            .chain_err(|| "Could not read from engine stream")?;
+        let len = stream.read(&mut buffer).chain_err(
+            || "Could not read from engine stream",
+        )?;
 
         for b in buffer.iter().take(len) {
             raw.push(*b);
@@ -28,7 +29,8 @@ pub fn read_from_stream<T: Read>(stream: &mut T) -> Result<String> {
         }
     }
 
-    let str_response = String::from_utf8(raw)
-        .chain_err(|| "Could not convert response to utf8 string")?;
+    let str_response = String::from_utf8(raw).chain_err(
+        || "Could not convert response to utf8 string",
+    )?;
     Ok(str_response)
 }

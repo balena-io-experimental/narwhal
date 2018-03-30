@@ -7,10 +7,9 @@ machine:
 jobs:
   build:
     docker:
-      - image: rust:1
+      - image: circleci/rust:1
     steps:
       - setup-docker-engine
       - checkout
-      - run: cargo build
       - run: cargo test -- --nocapture
 

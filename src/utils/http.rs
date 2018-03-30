@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use regex::Regex;
-use ::errors::*;
+use errors::*;
 
 pub struct Request {
     pub method: String,
@@ -49,9 +49,11 @@ pub fn parse_response(response: &str) -> Result<Response> {
 
     // The first line in the response should be the status line
     let status_line = parts.next().ok_or("Could not parse HTTP response")?;
-    let captures = STATUS_LINE_RE.captures(status_line)
-        .chain_err(|| "Could not parse status line of HTTP response")?;
-    let status_code = captures.get(1)
+    let captures = STATUS_LINE_RE.captures(status_line).chain_err(
+        || "Could not parse status line of HTTP response",
+    )?;
+    let status_code = captures
+        .get(1)
         .chain_err(|| "Could not parse status code of HTTP response")?
         .as_str()
         .parse::<u16>()
@@ -80,8 +82,9 @@ pub fn parse_response(response: &str) -> Result<Response> {
                 continue;
             }
             // This must be a HTTP header, parse it as such
-            let captures = HEADER_LINE_RE.captures(l)
-                .chain_err(|| "Could not parse HTTP headers")?;
+            let captures = HEADER_LINE_RE.captures(l).chain_err(
+                || "Could not parse HTTP headers",
+            )?;
 
             let name = String::from(captures.get(1).unwrap().as_str());
             let value = String::from(captures.get(2).unwrap().as_str());

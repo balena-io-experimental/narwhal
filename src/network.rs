@@ -14,20 +14,23 @@ pub fn get(client: Client, path: &str) -> Result<http::Response> {
 
     match client.backend {
         types::CommsBackend::Unix => {
-            let stream = UnixStream::connect(client)
-                .chain_err(|| "Could not connect to unix socket")?;
+            let stream = UnixStream::connect(client).chain_err(
+                || "Could not connect to unix socket",
+            )?;
 
             perform_request(stream, req)
-        },
+        }
         types::CommsBackend::TCP => {
-            let stream = TcpStream::connect(client)
-                .chain_err(|| "Could not connect to tcp address")?;
+            let stream = TcpStream::connect(client).chain_err(
+                || "Could not connect to tcp address",
+            )?;
 
             perform_request(stream, req)
-        },
+        }
         types::CommsBackend::TLS => {
-            let stream = TlsStream::connect(client)
-                .chain_err(|| "Could not connect to tls address")?;
+            let stream = TlsStream::connect(client).chain_err(
+                || "Could not connect to tls address",
+            )?;
 
             perform_request(stream, req)
         }
@@ -35,8 +38,9 @@ pub fn get(client: Client, path: &str) -> Result<http::Response> {
 }
 
 pub fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Result<http::Response> {
-    stream.request(req)
-        .chain_err(|| "Could not perform HTTP request")
+    stream.request(req).chain_err(
+        || "Could not perform HTTP request",
+    )
 }
 
 pub fn gen_request(method: &str, path: &str) -> http::Request {
@@ -45,6 +49,9 @@ pub fn gen_request(method: &str, path: &str) -> http::Request {
         path: String::from(path),
         headers: ::std::collections::HashMap::new(),
     };
-    req.headers.insert(String::from("Host"), String::from("narwhal"));
+    req.headers.insert(
+        String::from("Host"),
+        String::from("narwhal"),
+    );
     req
 }
