@@ -41,7 +41,7 @@ pub fn parse_response(response: &str) -> Result<Response> {
     // setup some regexes
     lazy_static! {
         static ref STATUS_LINE_RE: Regex = Regex::new(r"HTTP/\d+\.\d+ (\d+) \w+").unwrap();
-        static ref HEADER_LINE_RE: Regex = Regex::new(r"(\w+): (.*)$").unwrap();
+        static ref HEADER_LINE_RE: Regex = Regex::new(r"^([A-Za-z0-9\-]+): (.*)$").unwrap();
     }
 
     // First split the input into lines based on delimeters
@@ -92,5 +92,50 @@ pub fn parse_response(response: &str) -> Result<Response> {
         }
     }
 
+    if let Some(value) = res.headers.get("Transfer-Encoding") {
+        if value == "chunked" {
+            let parsed = parse_chunked(&res.body)
+                .chain_err(|| "Could not parse chunked HTTP body")?;
+            res.body = parsed;
+        }
+    }
+
     Ok(res)
 }
+
+pub fn parse_chunked(body: &str) -> Result<String> {
+    let parts = body.split("\r\n");
+    let mut parsed = String::new();
+
+    let mut in_chunk = false;
+    let mut length = 0;
+    let mut current_chunk_length: u32 = 0;
+
+    for p in parts {
+        match in_chunk {
+            false => {
+                // p is a hexadecimal number
+                length = u32::from_str_radix(p, 16)
+                    .chain_err(|| "Could not parse chunk length")?;
+                if length == 0 {
+                    break;
+                }
+                in_chunk = true;
+            }
+            true => {
+                parsed.push_str(p);
+                current_chunk_length += p.len() as u32;
+                if current_chunk_length >= length {
+                    in_chunk = false;
+                    current_chunk_length = 0;
+                } else {
+                    parsed.push_str("\r\n");
+                    current_chunk_length += 2;
+                }
+            }
+        }
+    }
+
+    Ok(parsed)
+}
+

@@ -114,5 +114,20 @@ mod tests {
             let request_str = ::narwhal::utils::http::gen_request_string(request);
             assert_eq!(request_str, "GET /test HTTP/1.1\r\nheader: value\r\n\r\n");
         }
+
+        #[test]
+        pub fn chunked_parsing() {
+            let test_str = "4\r\n\
+                Wiki\r\n\
+                5\r\n\
+                pedia\r\n\
+                E\r\n in\r\n\
+                \r\n\
+                chunks.\r\n\
+                0\r\n\
+                \r\n";
+
+            assert_eq!(http::parse_chunked(test_str).unwrap(), "Wikipedia in\r\n\r\nchunks.");
+        }
     }
 }
