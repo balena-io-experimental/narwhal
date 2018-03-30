@@ -12,7 +12,7 @@ mod tests {
     use ::narwhal::types::{ Client, TcpClient, TlsFiles };
 
     fn get_client() -> Client {
-        return match env::var("CIRCLECI") {
+        match env::var("CIRCLECI") {
             Ok(_) => {
                 // Return a TLS client
                 let cert_path_str = env::var("DOCKER_CERT_PATH").unwrap();

@@ -19,8 +19,8 @@ pub fn read_from_stream<T: Read>(stream: &mut T) -> Result<String> {
         let len = stream.read(&mut buffer)
             .chain_err(|| "Could not read from engine stream")?;
 
-        for i in 0..len {
-            raw.push(buffer[i]);
+        for b in buffer.iter().take(len) {
+            raw.push(*b);
         }
 
         if len < BUFFER_SIZE {

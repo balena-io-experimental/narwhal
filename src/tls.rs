@@ -58,6 +58,6 @@ impl HttpStream for TlsStream {
         let data = read_from_stream(&mut self.stream)
             .chain_err(|| "Could not read from TLS stream")?;
 
-        http::parse_response((&data))
+        http::parse_response(&data)
     }
 }
