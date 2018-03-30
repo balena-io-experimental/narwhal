@@ -1,7 +1,9 @@
 [package]
 name = "narwhal"
-version = "0.1.0"
+version = "0.2.0"
+description = "A docker remote API library, supporting TCP, TLS and Unix backends"
 authors = ["Cameron Diver <cameron@resin.io>"]
+license = "Apache-2.0"
 
 [dependencies]
 serde = "1.0.13"
