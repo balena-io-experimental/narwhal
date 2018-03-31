@@ -1,0 +1,76 @@
+[
+  {
+    "Id": "f05daa1a737314fee91f214041cb657722269f15aac9601bcfd1840d2d14bb41",
+    "Names": [
+      "/fervent_tereshkova"
+    ],
+    "Image": "alpine",
+    "ImageID": "sha256:3fd9065eaf02feaf94d68376da52541925650b81698c53c6824d92ff63f98353",
+    "Command": "/bin/sh",
+    "Created": 1522492301,
+    "Ports": [],
+    "Labels": {},
+    "State": "created",
+    "Status": "Created",
+    "HostConfig": {
+      "NetworkMode": "default"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "bridge": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "",
+          "EndpointID": "",
+          "Gateway": "",
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "38033ac8c44bc8672886d45118cc3ac037c749cb8783e69decd26563b6c11094",
+    "Names": [
+      "/modest_kalam"
+    ],
+    "Image": "sha256:44f3e89e8c78365494e4adc3759de80f60f5ad7348fc054328b5e064b5bce504",
+    "ImageID": "sha256:44f3e89e8c78365494e4adc3759de80f60f5ad7348fc054328b5e064b5bce504",
+    "Command": "/bin/bash",
+    "Created": 1522428772,
+    "Ports": [],
+    "Labels": {},
+    "State": "exited",
+    "Status": "Exited (0) 18 hours ago",
+    "HostConfig": {
+      "NetworkMode": "default"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "bridge": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "ec56a3871c0a2af2821b6d2f2eba7913575cdc625f961032d8ed0908f2d66438",
+          "EndpointID": "",
+          "Gateway": "",
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": []
+  }
+]

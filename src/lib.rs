@@ -21,6 +21,8 @@ pub mod tcp;
 pub mod unix;
 pub mod tls;
 
+pub mod containers;
+
 // Export main types to top level of the crate
 pub use queryparameters::QueryFilter;
 pub use queryparameters::QueryParameters;
