@@ -11,16 +11,18 @@ extern crate lazy_static;
 extern crate openssl;
 extern crate url;
 
-pub mod errors;
-pub mod types;
-pub mod network;
-pub mod engine;
-pub mod utils;
 pub mod httpstream;
 pub mod tcp;
 pub mod unix;
 pub mod tls;
 
+pub mod errors;
+pub mod types;
+pub mod network;
+pub mod utils;
+pub mod queryparameters;
+
+pub mod engine;
 pub mod containers;
 
 // Export main types to top level of the crate
