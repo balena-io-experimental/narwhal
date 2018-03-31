@@ -67,6 +67,36 @@ mod tests {
         }
     }
 
+    mod queries {
+        use narwhal::{ QueryFilter, QueryParameters };
+
+        #[test]
+        pub fn simple_params() {
+            let mut q = QueryParameters::new();
+            q.add("test", "str");
+            q.add("int", 42);
+            q.add("bool", false);
+
+            let query = q.to_string();
+            assert_eq!(query, "test=str&int=42&bool=false");
+        }
+
+        #[test]
+        pub fn filter_param() {
+            let mut q = QueryParameters::new();
+            let mut filter = QueryFilter::new();
+            filter.insert(
+                String::from("status"),
+                vec![String::from("paused"), String::from("running")]
+            );
+            q.add_filter(filter);
+            assert_eq!(
+                q.to_string(),
+                "filter=%7B%22status%22%3A%5B%22paused%22%2C%22running%22%5D%7D"
+            );
+        }
+    }
+
     mod utils {
         use narwhal::utils::http;
 
