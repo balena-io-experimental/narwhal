@@ -37,6 +37,26 @@ mod tests {
         }
     }
 
+    fn read_fixture(fixture: &str) -> String {
+        use std::io::Read;
+        use std::fs::File;
+        use std::path::PathBuf;
+
+        let mut filename = String::from(fixture);
+        filename.push_str(".json");
+
+        let path: PathBuf = [".", "tests", "fixtures", &filename].iter().collect();
+
+        let mut f = File::open(path)
+            .expect(&format!("Could not open fixture {}", filename));
+
+        let mut contents = String::new();
+        f.read_to_string(&mut contents)
+            .expect(&format!("Something went wrong reading the fixture {}", filename));
+
+        contents
+    }
+
     mod engine {
 
         use narwhal::engine;
@@ -64,6 +84,89 @@ mod tests {
                 assert!(false, "Could not ping engine");
             }
 
+        }
+    }
+
+    mod containers {
+        use narwhal::{ containers };
+        use super::{ get_client, read_fixture };
+
+        #[test]
+        pub fn parse_get_containers_empty() {
+            assert_eq!(containers::get_containers_parse("[]").unwrap().len(), 0);
+        }
+
+        #[test]
+        pub fn parse_get_containers() {
+            let test_str = read_fixture("get_containers");
+            let parsed = containers::get_containers_parse(&test_str)
+                .expect("Error parsing get_containers fixture");
+
+            assert_eq!(parsed.len(), 2);
+
+            let first = &parsed[0];
+            assert_eq!(first.image, "alpine");
+            assert_eq!(first.state, "created");
+            assert_eq!(first.host_config.get("NetworkMode").unwrap(), "default");
+            let network = first.network_settings.networks.get("bridge").unwrap();
+            assert_eq!(network.network_id, "");
+            assert_eq!(network.ip_prefix_len, 0);
+        }
+
+        #[test]
+        pub fn get_containers() {
+            let c = get_client();
+            let containers = containers::get_containers(c);
+
+            if let Err(ref e) = containers {
+                use error_chain::ChainedError;
+                println!("{}", e.display_chain());
+                assert!(false, "Could not get list of containers");
+            }
+        }
+
+        // TODO: Once we can create containers, add this back in
+        // and also add a filter test
+        // #[test]
+        // pub fn get_container_with_params() {
+        //     let c = get_client();
+        //     let mut params = QueryParameters::new();
+        //     params.add("all", true);
+        //
+        //     let containers = containers::get_container_with_params(c, &mut params)
+        //         .unwrap();
+        //     assert!(containers.len() > 0);
+        // }
+
+    }
+
+    mod queries {
+        use narwhal::{ QueryFilter, QueryParameters };
+
+        #[test]
+        pub fn simple_params() {
+            let mut q = QueryParameters::new();
+            q.add("test", "str");
+            q.add("int", 42);
+            q.add("bool", false);
+
+            let query = q.to_string();
+            assert_eq!(query, "test=str&int=42&bool=false");
+        }
+
+        #[test]
+        pub fn filter_param() {
+            let mut q = QueryParameters::new();
+            let mut filter = QueryFilter::new();
+            filter.insert(
+                String::from("status"),
+                vec![String::from("paused"), String::from("running")]
+            );
+            q.add_filter(filter);
+            assert_eq!(
+                q.to_string(),
+                "filter=%7B%22status%22%3A%5B%22paused%22%2C%22running%22%5D%7D"
+            );
         }
     }
 
