@@ -47,12 +47,13 @@ mod tests {
 
         let path: PathBuf = [".", "tests", "fixtures", &filename].iter().collect();
 
-        let mut f = File::open(path)
-            .expect(&format!("Could not open fixture {}", filename));
+        let mut f = File::open(path).expect(&format!("Could not open fixture {}", filename));
 
         let mut contents = String::new();
-        f.read_to_string(&mut contents)
-            .expect(&format!("Something went wrong reading the fixture {}", filename));
+        f.read_to_string(&mut contents).expect(&format!(
+            "Something went wrong reading the fixture {}",
+            filename
+        ));
 
         contents
     }
@@ -83,13 +84,12 @@ mod tests {
                 print!("{}", e.display_chain());
                 assert!(false, "Could not ping engine");
             }
-
         }
     }
 
     mod containers {
-        use narwhal::{ containers };
-        use super::{ get_client, read_fixture };
+        use narwhal::containers;
+        use super::{get_client, read_fixture};
 
         #[test]
         pub fn parse_get_containers_empty() {
@@ -141,7 +141,7 @@ mod tests {
     }
 
     mod queries {
-        use narwhal::{ QueryFilter, QueryParameters };
+        use narwhal::{QueryFilter, QueryParameters};
 
         #[test]
         pub fn simple_params() {
@@ -160,7 +160,7 @@ mod tests {
             let mut filter = QueryFilter::new();
             filter.insert(
                 String::from("status"),
-                vec![String::from("paused"), String::from("running")]
+                vec![String::from("paused"), String::from("running")],
             );
             q.add_filter(filter);
             assert_eq!(
@@ -176,7 +176,7 @@ mod tests {
         #[test]
         pub fn http_response_parsing() {
             let response = "HTTP/1.1 304 test\r\nheader: value\r\n\
-                header2: value2\r\n\r\nbody\r\nbody2";
+                            header2: value2\r\n\r\nbody\r\nbody2";
             let parsed = http::parse_response(response);
             if let Err(ref e) = parsed {
                 use error_chain::ChainedError;
@@ -204,17 +204,15 @@ mod tests {
 
         #[test]
         pub fn http_request_generating() {
-
             let mut request = http::Request {
                 method: String::from("GET"),
                 path: String::from("/test"),
                 headers: ::std::collections::HashMap::new(),
                 body: None,
             };
-            request.headers.insert(
-                String::from("header"),
-                String::from("value"),
-            );
+            request
+                .headers
+                .insert(String::from("header"), String::from("value"));
             let request_str = http::gen_request_string(request);
             assert_eq!(request_str, "GET /test HTTP/1.1\r\nheader: value\r\n\r\n");
         }
@@ -234,16 +232,19 @@ mod tests {
         #[test]
         pub fn chunked_parsing() {
             let test_str = "4\r\n\
-                Wiki\r\n\
-                5\r\n\
-                pedia\r\n\
-                E\r\n in\r\n\
-                \r\n\
-                chunks.\r\n\
-                0\r\n\
-                \r\n";
+                            Wiki\r\n\
+                            5\r\n\
+                            pedia\r\n\
+                            E\r\n in\r\n\
+                            \r\n\
+                            chunks.\r\n\
+                            0\r\n\
+                            \r\n";
 
-            assert_eq!(http::parse_chunked(test_str).unwrap(), "Wikipedia in\r\n\r\nchunks.");
+            assert_eq!(
+                http::parse_chunked(test_str).unwrap(),
+                "Wikipedia in\r\n\r\nchunks."
+            );
         }
     }
 }

@@ -4,7 +4,7 @@ use url::form_urlencoded;
 use serde_json;
 
 pub struct QueryParameters {
-    encoder: form_urlencoded::Serializer<String>
+    encoder: form_urlencoded::Serializer<String>,
 }
 
 pub type QueryFilter = HashMap<String, Vec<String>>;
@@ -19,7 +19,6 @@ impl QueryParameters {
         self.encoder.append_pair(&name, &value.to_string());
     }
     pub fn add_filter(&mut self, filter: QueryFilter) {
-
         // Don't worry about the unwrap, as the type system says
         // it has to be serializable
         let filter_str = serde_json::to_string(&filter).unwrap();

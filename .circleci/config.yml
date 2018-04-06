@@ -11,5 +11,25 @@ jobs:
     steps:
       - setup-docker-engine
       - checkout
-      - run: cargo test -- --nocapture
-
+      - restore_cache:
+          key: project-cache
+      - run:
+          name: Check formatting
+          command: |
+            rustup component add rustfmt-preview
+            rustfmt --version
+            cargo fmt -- --write-mode=diff
+      - run:
+          name: Stable Build
+          command: |
+            rustc --version --verbose
+            cargo --version --verbose
+            cargo build
+      - run:
+          name: Test
+          command: cargo test -- --nocapture
+      - save_cache:
+          key: project-cache
+          paths:
+            - "~/.cargo"
+            - "./target"

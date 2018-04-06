@@ -40,9 +40,7 @@ pub fn gen_request_string(request: Request) -> String {
     ret
 }
 
-
 pub fn parse_response(response: &str) -> Result<Response> {
-
     // setup some regexes
     lazy_static! {
         static ref STATUS_LINE_RE: Regex = Regex::new(r"HTTP/\d+\.\d+ (\d+) \w+").unwrap();
@@ -54,9 +52,9 @@ pub fn parse_response(response: &str) -> Result<Response> {
 
     // The first line in the response should be the status line
     let status_line = parts.next().ok_or("Could not parse HTTP response")?;
-    let captures = STATUS_LINE_RE.captures(status_line).chain_err(
-        || "Could not parse status line of HTTP response",
-    )?;
+    let captures = STATUS_LINE_RE
+        .captures(status_line)
+        .chain_err(|| "Could not parse status line of HTTP response")?;
     let status_code = captures
         .get(1)
         .chain_err(|| "Could not parse status code of HTTP response")?
@@ -87,9 +85,9 @@ pub fn parse_response(response: &str) -> Result<Response> {
                 continue;
             }
             // This must be a HTTP header, parse it as such
-            let captures = HEADER_LINE_RE.captures(l).chain_err(
-                || "Could not parse HTTP headers",
-            )?;
+            let captures = HEADER_LINE_RE
+                .captures(l)
+                .chain_err(|| "Could not parse HTTP headers")?;
 
             let name = String::from(captures.get(1).unwrap().as_str());
             let value = String::from(captures.get(2).unwrap().as_str());
@@ -99,8 +97,8 @@ pub fn parse_response(response: &str) -> Result<Response> {
 
     if let Some(value) = res.headers.get("Transfer-Encoding") {
         if value == "chunked" {
-            let parsed = parse_chunked(&res.body)
-                .chain_err(|| "Could not parse chunked HTTP body")?;
+            let parsed =
+                parse_chunked(&res.body).chain_err(|| "Could not parse chunked HTTP body")?;
             res.body = parsed;
         }
     }
@@ -120,8 +118,7 @@ pub fn parse_chunked(body: &str) -> Result<String> {
         match in_chunk {
             false => {
                 // p is a hexadecimal number
-                length = u32::from_str_radix(p, 16)
-                    .chain_err(|| "Could not parse chunk length")?;
+                length = u32::from_str_radix(p, 16).chain_err(|| "Could not parse chunk length")?;
                 if length == 0 {
                     break;
                 }
@@ -143,4 +140,3 @@ pub fn parse_chunked(body: &str) -> Result<String> {
 
     Ok(parsed)
 }
-

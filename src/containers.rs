@@ -5,7 +5,7 @@ use serde_json;
 use errors::*;
 use network::get;
 use types::Client;
-use queryparameters::{ generate_path, QueryParameters };
+use queryparameters::{generate_path, QueryParameters};
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
@@ -15,9 +15,8 @@ pub struct Port {
     // We can't use `type` as a field name, so rename
     // this to protocol
     #[serde(rename(deserialize = "Type"))]
-    pub protocol: String
+    pub protocol: String,
 }
-
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
@@ -85,11 +84,13 @@ pub fn get_containers_parse(json: &str) -> Result<Vec<Container>> {
     serde_json::from_str(json).chain_err(|| "Failed to deserialize get_containers response")
 }
 
-pub fn get_containers(client: Client, args: Option<&mut QueryParameters>) -> Result<Vec<Container>> {
+pub fn get_containers(
+    client: Client,
+    args: Option<&mut QueryParameters>,
+) -> Result<Vec<Container>> {
     let path = generate_path("/containers/json", args);
 
-    let response = get(client, &path)
-        .chain_err(|| "Failed to get container list")?;
+    let response = get(client, &path).chain_err(|| "Failed to get container list")?;
 
     if response.status_code != 200 {
         bail!("non-200 response from server");

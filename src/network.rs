@@ -24,23 +24,20 @@ pub fn post(client: Client, path: &str, data: &str) -> Result<http::Response> {
 fn perform_client_request(client: Client, req: http::Request) -> Result<http::Response> {
     match client.backend {
         types::CommsBackend::Unix => {
-            let stream = UnixStream::connect(client).chain_err(
-                || "Could not connect to unix socket",
-            )?;
+            let stream =
+                UnixStream::connect(client).chain_err(|| "Could not connect to unix socket")?;
 
             perform_request(stream, req)
         }
         types::CommsBackend::TCP => {
-            let stream = TcpStream::connect(client).chain_err(
-                || "Could not connect to tcp address",
-            )?;
+            let stream =
+                TcpStream::connect(client).chain_err(|| "Could not connect to tcp address")?;
 
             perform_request(stream, req)
         }
         types::CommsBackend::TLS => {
-            let stream = TlsStream::connect(client).chain_err(
-                || "Could not connect to tls address",
-            )?;
+            let stream =
+                TlsStream::connect(client).chain_err(|| "Could not connect to tls address")?;
 
             perform_request(stream, req)
         }
@@ -48,9 +45,9 @@ fn perform_client_request(client: Client, req: http::Request) -> Result<http::Re
 }
 
 fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Result<http::Response> {
-    stream.request(req).chain_err(
-        || "Could not perform HTTP request",
-    )
+    stream
+        .request(req)
+        .chain_err(|| "Could not perform HTTP request")
 }
 
 pub fn gen_request(method: &str, path: &str, body: Option<String>) -> http::Request {
@@ -58,11 +55,9 @@ pub fn gen_request(method: &str, path: &str, body: Option<String>) -> http::Requ
         method: String::from(method),
         path: String::from(path),
         headers: ::std::collections::HashMap::new(),
-        body
+        body,
     };
-    req.headers.insert(
-        String::from("Host"),
-        String::from("narwhal"),
-    );
+    req.headers
+        .insert(String::from("Host"), String::from("narwhal"));
     req
 }
