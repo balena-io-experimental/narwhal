@@ -140,6 +140,65 @@ mod tests {
 
     }
 
+    mod images {
+        use narwhal::images;
+        use super::{get_client, read_fixture};
+
+        #[test]
+        pub fn parse_get_images_empty() {
+            assert_eq!(images::get_images_parse("[]").unwrap().len(), 0);
+        }
+
+        #[test]
+        pub fn parse_get_images_docs() {
+            let test_str = read_fixture("get_images_docs");
+            let parsed =
+                images::get_images_parse(&test_str).expect("Error parsing get_images fixture");
+
+            assert_eq!(parsed.len(), 2);
+
+            let first = &parsed[0];
+            assert_eq!(
+                first.id,
+                "sha256:e216a057b1cb1efc11f8a268f37ef62083e70b1b38323ba252e25ac88904a7e8"
+            );
+            assert_eq!(first.repo_tags.clone().unwrap().len(), 2);
+            assert_eq!(first.repo_digests.clone().unwrap().len(), 1);
+        }
+
+        #[test]
+        pub fn parse_get_images() {
+            let test_str = read_fixture("get_images_real");
+            let parsed =
+                images::get_images_parse(&test_str).expect("Error parsing get_images fixture");
+
+            assert_eq!(parsed.len(), 2);
+
+            let first = &parsed[0];
+            assert_eq!(
+                first.id,
+                "sha256:6d62985fe6c45b09beafde79d04f384ecca2ed1b3b764aa8adfcd98a555c5069"
+            );
+            let first_labels = first.labels.clone();
+            assert_eq!(first_labels.is_some(), true);
+            assert_eq!(first_labels.unwrap().len(), 3);
+            let second = &parsed[1];
+            assert_eq!(second.labels.clone().is_none(), true);
+        }
+
+        #[test]
+        pub fn get_images() {
+            let c = get_client();
+            let images = images::get_images(c, None);
+
+            if let Err(ref e) = images {
+                use error_chain::ChainedError;
+                println!("{}", e.display_chain());
+                assert!(false, "Could not get list of containers");
+            }
+        }
+    }
+
     mod queries {
         use narwhal::{QueryFilter, QueryParameters};
 
