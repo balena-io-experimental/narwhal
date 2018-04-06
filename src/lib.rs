@@ -23,6 +23,7 @@ pub mod utils;
 pub mod queryparameters;
 
 pub mod engine;
+pub mod images;
 pub mod containers;
 
 // Export main types to top level of the crate

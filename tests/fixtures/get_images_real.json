@@ -1,0 +1,38 @@
+[
+  {
+    "Containers": -1,
+    "Created": 1522728760,
+    "Id": "sha256:6d62985fe6c45b09beafde79d04f384ecca2ed1b3b764aa8adfcd98a555c5069",
+    "Labels": {
+      "io.resin.architecture": "armhf",
+      "io.resin.device-type": "raspberry-pi2",
+      "io.resin.qemu.version": "2.9.0.resin1-arm"
+    },
+    "ParentId": "",
+    "RepoDigests": [
+      "resin/raspberrypi3-alpine@sha256:df86f2a80bfc509a8f83a88446d1cdb31f603182cc2af3087cc73377608b369f"
+    ],
+    "RepoTags": [
+      "resin/raspberrypi3-alpine:latest"
+    ],
+    "SharedSize": -1,
+    "Size": 44462071,
+    "VirtualSize": 44462071
+  },
+  {
+    "Containers": -1,
+    "Created": 1520374646,
+    "Id": "sha256:f975c50357489439eb9145dbfa16bb7cd06c02c31aa4df45c77de4d2baa4e232",
+    "Labels": null,
+    "ParentId": "",
+    "RepoDigests": [
+      "ubuntu@sha256:e348fbbea0e0a0e73ab0370de151e7800684445c509d46195aef73e090a49bd6"
+    ],
+    "RepoTags": [
+      "ubuntu:latest"
+    ],
+    "SharedSize": -1,
+    "Size": 112443046,
+    "VirtualSize": 112443046
+  }
+]
