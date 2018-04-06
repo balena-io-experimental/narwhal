@@ -30,3 +30,14 @@ impl QueryParameters {
         self.encoder.finish()
     }
 }
+
+pub fn generate_path(path_base: &str, maybe_args: Option<&mut QueryParameters>) -> String {
+    let mut path = String::from(path_base);
+
+    if let Some(a) = maybe_args {
+        path.push('?');
+        path.push_str(&a.to_string());
+    }
+
+    return path;
+}

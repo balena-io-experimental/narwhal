@@ -116,7 +116,7 @@ mod tests {
         #[test]
         pub fn get_containers() {
             let c = get_client();
-            let containers = containers::get_containers(c);
+            let containers = containers::get_containers(c, None);
 
             if let Err(ref e) = containers {
                 use error_chain::ChainedError;
