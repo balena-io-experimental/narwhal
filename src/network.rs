@@ -10,8 +10,18 @@ use tls::TlsStream;
 use utils::http;
 
 pub fn get(client: Client, path: &str) -> Result<http::Response> {
-    let req = gen_request("GET", path);
+    let req = gen_request("GET", path, None);
 
+    perform_client_request(client, req)
+}
+
+pub fn post(client: Client, path: &str, data: &str) -> Result<http::Response> {
+    let req = gen_request("POST", path, Some(String::from(data)));
+
+    perform_client_request(client, req)
+}
+
+fn perform_client_request(client: Client, req: http::Request) -> Result<http::Response> {
     match client.backend {
         types::CommsBackend::Unix => {
             let stream = UnixStream::connect(client).chain_err(
@@ -37,17 +47,18 @@ pub fn get(client: Client, path: &str) -> Result<http::Response> {
     }
 }
 
-pub fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Result<http::Response> {
+fn perform_request<T: HttpStream>(mut stream: T, req: http::Request) -> Result<http::Response> {
     stream.request(req).chain_err(
         || "Could not perform HTTP request",
     )
 }
 
-pub fn gen_request(method: &str, path: &str) -> http::Request {
+pub fn gen_request(method: &str, path: &str, body: Option<String>) -> http::Request {
     let mut req = http::Request {
         method: String::from(method),
         path: String::from(path),
         headers: ::std::collections::HashMap::new(),
+        body
     };
     req.headers.insert(
         String::from("Host"),

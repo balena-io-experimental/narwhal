@@ -7,6 +7,7 @@ pub struct Request {
     pub method: String,
     pub path: String,
     pub headers: HashMap<String, String>,
+    pub body: Option<String>,
 }
 
 pub struct Response {
@@ -31,6 +32,10 @@ pub fn gen_request_string(request: Request) -> String {
     }
 
     ret.push_str("\r\n");
+
+    if let Some(b) = request.body {
+        ret.push_str(&b);
+    }
 
     ret
 }

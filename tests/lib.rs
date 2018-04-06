@@ -209,13 +209,26 @@ mod tests {
                 method: String::from("GET"),
                 path: String::from("/test"),
                 headers: ::std::collections::HashMap::new(),
+                body: None,
             };
             request.headers.insert(
                 String::from("header"),
                 String::from("value"),
             );
-            let request_str = ::narwhal::utils::http::gen_request_string(request);
+            let request_str = http::gen_request_string(request);
             assert_eq!(request_str, "GET /test HTTP/1.1\r\nheader: value\r\n\r\n");
+        }
+
+        #[test]
+        pub fn gen_http_request_with_body() {
+            let request = http::Request {
+                method: String::from("POST"),
+                path: String::from("/test"),
+                headers: ::std::collections::HashMap::new(),
+                body: Some(String::from("testbody")),
+            };
+            let request_str = http::gen_request_string(request);
+            assert_eq!(request_str, "POST /test HTTP/1.1\r\n\r\ntestbody");
         }
 
         #[test]
