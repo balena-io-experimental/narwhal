@@ -61,7 +61,7 @@ mod tests {
     mod engine {
 
         use narwhal::engine;
-        use super::get_client;
+        use super::{get_client, read_fixture};
 
         #[test]
         pub fn get_version() {
@@ -72,6 +72,46 @@ mod tests {
                 use error_chain::ChainedError;
                 print!("{}", e.display_chain());
                 assert!(false, "Could not get engine version");
+            }
+        }
+
+        #[test]
+        pub fn parse_info_docs() {
+            let test_str = read_fixture("info_docs");
+            let parsed = engine::info_parse(&test_str).expect("Error parsing info fixture");
+
+            assert_eq!(parsed.architecture.unwrap(), "x86_64");
+            assert_eq!(parsed.discovery_backend.is_none(), true);
+            assert_eq!(parsed.debug.unwrap(), false);
+            assert_eq!(parsed.images.unwrap(), 16);
+            assert_eq!(parsed.labels.unwrap().len(), 1);
+            assert_eq!(parsed.plugins.unwrap().network.unwrap().len(), 3);
+            assert_eq!(parsed.system_status.unwrap()[0][1], "Healthy");
+        }
+
+        #[test]
+        pub fn parse_info() {
+            let test_str = read_fixture("info_real");
+            let parsed = engine::info_parse(&test_str).expect("Error parsing info fixture");
+
+            assert_eq!(
+                parsed.index_server_address.unwrap(),
+                "https://index.docker.io/v1/"
+            );
+            assert_eq!(parsed.labels.unwrap().len(), 0);
+            assert_eq!(parsed.system_status.is_none(), true);
+            assert_eq!(parsed.server_version.unwrap(), "18.03.0-ce");
+        }
+
+        #[test]
+        pub fn get_info() {
+            let c = get_client();
+            let info = engine::info(c);
+
+            if let Err(ref e) = info {
+                use error_chain::ChainedError;
+                print!("{}", e.display_chain());
+                assert!(false, "Could not get engine info");
             }
         }
 

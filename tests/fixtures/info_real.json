@@ -1,0 +1,132 @@
+{
+  "ID": "4MOQ:FEIJ:DLRQ:D2V6:ZZCK:SZFD:WDGW:EOCV:CXSB:A3J6:EUFV:AJEL",
+  "Containers": 0,
+  "ContainersRunning": 0,
+  "ContainersPaused": 0,
+  "ContainersStopped": 0,
+  "Images": 2,
+  "Driver": "overlay2",
+  "DriverStatus": [
+    [
+      "Backing Filesystem",
+      "extfs"
+    ],
+    [
+      "Supports d_type",
+      "true"
+    ],
+    [
+      "Native Overlay Diff",
+      "false"
+    ]
+  ],
+  "SystemStatus": null,
+  "Plugins": {
+    "Volume": [
+      "local"
+    ],
+    "Network": [
+      "bridge",
+      "host",
+      "macvlan",
+      "null",
+      "overlay"
+    ],
+    "Authorization": null,
+    "Log": [
+      "awslogs",
+      "fluentd",
+      "gcplogs",
+      "gelf",
+      "journald",
+      "json-file",
+      "logentries",
+      "splunk",
+      "syslog"
+    ]
+  },
+  "MemoryLimit": true,
+  "SwapLimit": true,
+  "KernelMemory": true,
+  "CpuCfsPeriod": true,
+  "CpuCfsQuota": true,
+  "CPUShares": true,
+  "CPUSet": true,
+  "IPv4Forwarding": true,
+  "BridgeNfIptables": true,
+  "BridgeNfIp6tables": true,
+  "Debug": false,
+  "NFd": 19,
+  "OomKillDisable": true,
+  "NGoroutines": 32,
+  "SystemTime": "2018-04-09T23:05:15.8246835+01:00",
+  "LoggingDriver": "json-file",
+  "CgroupDriver": "cgroupfs",
+  "NEventsListener": 0,
+  "KernelVersion": "4.15.15-1-ARCH",
+  "OperatingSystem": "Arch Linux",
+  "OSType": "linux",
+  "Architecture": "x86_64",
+  "IndexServerAddress": "https://index.docker.io/v1/",
+  "RegistryConfig": {
+    "AllowNondistributableArtifactsCIDRs": [],
+    "AllowNondistributableArtifactsHostnames": [],
+    "InsecureRegistryCIDRs": [
+      "127.0.0.0/8"
+    ],
+    "IndexConfigs": {
+      "docker.io": {
+        "Name": "docker.io",
+        "Mirrors": [],
+        "Secure": true,
+        "Official": true
+      }
+    },
+    "Mirrors": []
+  },
+  "NCPU": 4,
+  "MemTotal": 20767236096,
+  "GenericResources": null,
+  "DockerRootDir": "/var/lib/docker",
+  "HttpProxy": "",
+  "HttpsProxy": "",
+  "NoProxy": "",
+  "Name": "hydra",
+  "Labels": [],
+  "ExperimentalBuild": false,
+  "ServerVersion": "18.03.0-ce",
+  "ClusterStore": "",
+  "ClusterAdvertise": "",
+  "Runtimes": {
+    "runc": {
+      "path": "docker-runc"
+    }
+  },
+  "DefaultRuntime": "runc",
+  "Swarm": {
+    "NodeID": "",
+    "NodeAddr": "",
+    "LocalNodeState": "inactive",
+    "ControlAvailable": false,
+    "Error": "",
+    "RemoteManagers": null
+  },
+  "LiveRestoreEnabled": false,
+  "Isolation": "",
+  "InitBinary": "docker-init",
+  "ContainerdCommit": {
+    "ID": "cfd04396dc68220d1cecbe686a6cc3aa5ce3667c",
+    "Expected": "cfd04396dc68220d1cecbe686a6cc3aa5ce3667c"
+  },
+  "RuncCommit": {
+    "ID": "4fc53a81fb7c994640722ac585fa9ca548971871",
+    "Expected": "4fc53a81fb7c994640722ac585fa9ca548971871"
+  },
+  "InitCommit": {
+    "ID": "949e6fa",
+    "Expected": "949e6fa"
+  },
+  "SecurityOptions": [
+    "name=seccomp,profile=default"
+  ]
+}
